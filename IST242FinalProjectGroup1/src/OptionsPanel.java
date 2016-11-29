@@ -52,9 +52,10 @@ public class OptionsPanel extends JPanel{
     public int getDifficulty(){
         return difficultySlider.getValue();
     }
-    public String getName(){
-        System.out.println(characterNameField.getText());
-        return characterNameField.getText();
+    public String getPlayerName(){
+        String name = characterNameField.getText();
+        System.out.println(name);
+        return name;
     }
     public void setNameLabel(String name){
         this.characterNameLabel.setText(name);
