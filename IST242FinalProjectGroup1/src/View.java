@@ -13,7 +13,6 @@ public class View extends JFrame{
     private OptionsPanel optionsPanel;
     private InstructionsPanel instructionsPanel;
     private CreditsPanel creditsPanel;
-    private JButton test;
     
     View(Model model){
         
@@ -21,8 +20,6 @@ public class View extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
         setBackground(Color.BLACK);
-        test = new JButton();
-        add(test);
         
         model = new Model();
         gamePanel = new GamePanel();
@@ -39,10 +36,21 @@ public class View extends JFrame{
         this.optionsPanel.addActionListeners(al);
         this.instructionsPanel.addActionListeners(al);
         this.creditsPanel.addActionListeners(al);
-        this.test.addActionListener(al);
     }
-    public JButton getTest(){
-        return this.test;
+    public String getPlayerName(){
+        return optionsPanel.getPlayerName();
+    }
+    public int getDifficulty(){
+        return optionsPanel.getDifficulty();
+    }
+    public void setNameLabel(String playerName){
+        optionsPanel.setNameLabel(playerName);
+    }
+    public void setDifficulty(int difficulty){
+        gamePanel.setDifficulty(difficulty);
+    }
+    public void setPlayerName(String name){
+        gamePanel.setName(name);
     }
     public JButton getSplashGame(){
         return splashPanel.getGame();
@@ -61,6 +69,9 @@ public class View extends JFrame{
     }
     public JButton getOptionsBack(){
         return optionsPanel.getBack();
+    }
+    public JButton getOptionsInfo(){
+        return optionsPanel.getInfo();
     }
     public JButton getInstructionsBack(){
         return instructionsPanel.getBack();
