@@ -2,19 +2,11 @@
 import java.awt.Color;
 import java.util.Timer;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- *
- * @author Master
- */
 public class Model {
     
-    int panelNumber;
+    private int panelNumber,difficulty;
+    private String name;
+    private int playerX,playerY;
     
     Model(){
         
@@ -26,5 +18,29 @@ public class Model {
     }
     public void setPanelNumber(int panelNumber){
         this.panelNumber = panelNumber;
+    }
+    public void setDifficulty(int difficulty){
+        this.difficulty = difficulty;
+    }
+    public int getDifficulty(){
+        return difficulty;
+    }
+    public void setName(String name){
+        this.name = name;
+    }
+    public String getName(){
+        return name;
+    }
+    public int getPlayerX(){
+        return this.playerX;
+    }
+    public void setPlayerX(int x){
+        this.playerX = x;
+    }
+    public int getPlayerY(){
+        return this.playerY;
+    }
+    public void setPlayerY(int y){
+        this.playerY = y;
     }
 }
