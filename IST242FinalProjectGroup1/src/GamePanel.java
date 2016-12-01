@@ -10,11 +10,13 @@ import javax.swing.JButton;
 public class GamePanel extends JPanel implements KeyListener,ActionListener{
 
 
-    private TangibleObject bouncer1, follower1, wanderer1, berserker1;
+    private TangibleObject bouncer1, follower1, wanderer1, berserker1, player;
     private Walls walls;
     private Timer time;
     private int count;
     private Color dotColor;
+    private JButton back;
+    private JLabel name,difficulty;
     
     GamePanel(){
         
@@ -23,13 +25,50 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
         follower1 = new Follower(300,11,10,10);
         wanderer1 = new Wanderer(300,300,10,10);
         berserker1 = new Berserker(350,300,10,10);
+        player = new Player(100,100,10,10);
         time = new Timer(15,this);
         time.start();
+        back = new JButton("Back");
+        add(back);
+        name = new JLabel("default");
+        add(name);
+        difficulty = new JLabel("default");
+        add(difficulty);
+        addKeyListeners(this);
     }
-
+    public void addActionListeners(ActionListener al){
+        this.back.addActionListener(al);
+    }
+    public void addKeyListeners(KeyListener e){
+        this.addKeyListener(e);
+    }
+    public JButton getBack(){
+        return this.back;
+    }
+    public void setName(String nameText){
+        name.setText(nameText);
+    }
+    public void setDifficulty(int difficultyNumber){
+        difficulty.setText("difficulty is " + difficultyNumber);
+    }
+    public int getPlayerX(){
+        return this.player.getThisX();
+    }
+    public void setPlayerX(int x){
+        player.setX(x);
+    }
+    public int getPlayerY(){
+        return this.player.getThisY();
+    }
+    public void setPlayerY(int y){
+        player.setY(y);
+    }
     public void counter(){
         count++;
-
+        
+        player.objectMovement(1);
+        player.wallCollision();
+        //player
         bouncer1.objectMovement(1);
         bouncer1.wallCollision();
         follower1.targetFollower(bouncer1);
@@ -46,6 +85,8 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
     public void paintComponent(Graphics g){
         
         super.paintComponent(g);
+        g.setColor(Color.blue);
+        g.fillRect(player.x,player.y,player.width,player.height);
         g.setColor(bouncer1.dotColor(count));
         g.fillRect(bouncer1.x,bouncer1.y,bouncer1.width,bouncer1.height);
         g.setColor(Color.black);
@@ -68,18 +109,30 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
  
     }
     @Override
-    public void keyTyped(KeyEvent e) {
-        int key = e.getKeyCode();
-        if(key == KeyEvent.VK_UP){
-            System.out.println("up");
-        }
-    }
+    public void keyTyped(KeyEvent e) {}
 
     @Override
     public void keyPressed(KeyEvent e) {
         int key = e.getKeyCode();
         if(key == KeyEvent.VK_UP){
-            System.out.println("up");
+            player.setDX(0);
+            player.setDY(-1);
+        }
+        if(key == KeyEvent.VK_DOWN){
+            player.setDX(0);
+            player.setDY(1);
+        }
+        if(key == KeyEvent.VK_LEFT){
+            player.setDX(-1);
+            player.setDY(0);
+        }
+        if(key == KeyEvent.VK_RIGHT){
+            player.setDX(1);
+            player.setDY(0);
+        }
+        if(key == KeyEvent.VK_SPACE){
+            player.setDX(0);
+            player.setDY(0);
         }
     }
 
@@ -87,7 +140,20 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
     public void keyReleased(KeyEvent e) {
         int key = e.getKeyCode();
         if(key == KeyEvent.VK_UP){
-            System.out.println("not up");
+            player.setDX(0);
+            player.setDY(0);
+        }
+        if(key == KeyEvent.VK_DOWN){
+            player.setDX(0);
+            player.setDY(0);
+        }
+        if(key == KeyEvent.VK_LEFT){
+            player.setDX(0);
+            player.setDY(0);
+        }
+        if(key == KeyEvent.VK_RIGHT){
+            player.setDX(0);
+            player.setDY(0);
         }
     }
     
