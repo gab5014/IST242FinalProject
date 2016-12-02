@@ -33,8 +33,8 @@ abstract public class TangibleObject extends Rectangle{
         this.y = y;
         this.width = width;
         this.height = height;
-        this.objectDX = 1;
-        this.objectDY = 1;
+        this.objectDX = 0;
+        this.objectDY = 0;
         this.xDisplacement = (this.x + this.width)-1;
         this.yDisplacement = (this.y + this.height)-1;
         this.topDisplacement = (((this.x + this.width) / 2) -1);
@@ -52,6 +52,18 @@ abstract public class TangibleObject extends Rectangle{
     }
     public ArrayList<TangibleObject> getObjectArray(){
         return this.objectArray;
+    }
+    public int getThisX(){
+        return this.x;
+    }
+    public int getThisY(){
+        return this.y;
+    }
+    public void setX(int dotDX){
+        this.x = dotDX;
+    }
+    public void setY(int dotDY){
+        this.y = dotDY;
     }
     public int getDX(){
         return this.objectDX;
@@ -143,6 +155,11 @@ abstract public class TangibleObject extends Rectangle{
             getRight().y = getRightDisplacement();
         }
     }
+    public void bouncerMovement(){
+
+        this.objectMovement(3);
+        this.wallCollision();
+    }
     public void targetFollower(TangibleObject target){//fix bouncing on stationary target
         if(this.getBottom().x < target.getBottom().x - target.height){//move down
             setDX(1);
@@ -157,6 +174,7 @@ abstract public class TangibleObject extends Rectangle{
             setDY(-1);
         }
         this.wallCollision();
+        
         this.objectMovement(1);
     }
     public void randomMotion(int counter){
@@ -183,7 +201,7 @@ abstract public class TangibleObject extends Rectangle{
             }
         }
         this.wallCollision();
-        this.objectMovement(1);
+        this.objectMovement(3);
     }
     public void aggressiveRandomMotion(int counter,TangibleObject target){//moves toward target 1 in 5 times
         
@@ -220,7 +238,7 @@ abstract public class TangibleObject extends Rectangle{
             this.wait = false;
         }
         this.wallCollision();
-        this.objectMovement(1);
+        this.objectMovement(3);
     }
     public void projectileShooter(int facing,int count){
         
@@ -260,7 +278,7 @@ abstract public class TangibleObject extends Rectangle{
             tempProjectile.setDX(this.getObjectArray().get(i).getDX());
             tempProjectile.setDY(this.getObjectArray().get(i).getDY());
             tempProjectile.wallCollision();
-            tempProjectile.objectMovement(2);
+            tempProjectile.objectMovement(4);
             this.objectArray.set(i, tempProjectile);
         }
     }
@@ -268,19 +286,19 @@ abstract public class TangibleObject extends Rectangle{
         for(int i = 0;i < walls.getWallArray().size();i++){
             if(walls.getWallArray().get(i).intersects(this.getTop())){
                 this.setDY(1);
-                System.out.println("hit top");
+                //System.out.println("hit top");
             }
             if(walls.getWallArray().get(i).intersects(this.getBottom())){
                 this.setDY(-1);
-                System.out.println("hit bottom");
+                //System.out.println("hit bottom");
             }
             if(walls.getWallArray().get(i).intersects(this.getLeft())){
                 this.setDX(1);
-                System.out.println("hit left");
+                //System.out.println("hit left");
             }
             if(walls.getWallArray().get(i).intersects(this.getRight())){
                 this.setDX(-1);
-                System.out.println("hit right");
+                //System.out.println("hit right");
             }
         }
     }
