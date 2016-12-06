@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.JButton;
 
@@ -13,20 +14,28 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
     private TangibleObject bouncer1, follower1, wanderer1, berserker1, player;
     private Walls walls;
     private Timer time;
-    private int count;
+    private int count, pause;
     private Color dotColor;
     private JButton back;
     private JLabel name,difficulty;
+    private ArrayList<TangibleObject> enemies;
     
     GamePanel(){
         
         walls = new Walls();
+        enemies = new ArrayList();
         bouncer1 = new Bouncer(55,20,10,10);
         follower1 = new Follower(300,11,10,10);
         wanderer1 = new Wanderer(300,300,10,10);
         berserker1 = new Berserker(350,300,10,10);
+        enemies.add(bouncer1);
+        enemies.add(follower1);
+        enemies.add(wanderer1);
+        enemies.add(berserker1);
+        
         player = new Player(100,100,10,10);
-        time = new Timer(15,this);
+        player.setDifficulty(10);
+        time = new Timer(30,this);
         time.start();
         back = new JButton("Back");
         add(back);
@@ -50,6 +59,10 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
     }
     public void setDifficulty(int difficultyNumber){
         difficulty.setText("difficulty is " + difficultyNumber);
+        player.setDifficulty(difficultyNumber);
+    }
+    public int getDifficulty(){
+        return player.getDifficulty();
     }
     public int getPlayerX(){
         return this.player.getThisX();
@@ -63,19 +76,42 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
     public void setPlayerY(int y){
         player.setY(y);
     }
+    public ArrayList<TangibleObject> getEnemies(){
+        return this.enemies;
+    }
+    public void setEnemies(ArrayList<TangibleObject> enemies){
+        for(int i = 0; i < wanderer1.getObjectArray().size();i++){
+            enemies.add(wanderer1.getObjectArray().get(i));
+            System.out.println(enemies.size());
+        }
+        this.enemies = enemies;
+    }
+    public void enemyContact(TangibleObject player){//make this adjust model
+        for(int i = 0; i < enemies.size(); i++){
+            pause++;
+            if(pause > 30){
+                if(player.intersects(enemies.get(i))){
+                    player.setDifficulty(player.getDifficulty()-1);
+                    pause = 0;
+                }
+            }
+        }
+    }
     public void counter(){
         count++;
         
-        player.objectMovement(1);
-        player.wallCollision();
-        //player
-        bouncer1.objectMovement(1);
+        player.objectMovement(3);
+        player.playerCollision();
+        setDifficulty(player.getDifficulty());
+        player.setFacing(player.getDX(), player.getDY());
+        bouncer1.bouncerMovement();
         bouncer1.wallCollision();
-        follower1.targetFollower(bouncer1);
+        follower1.targetFollower(player);
         wanderer1.randomMotion(count);
         wanderer1.setFacing(wanderer1.getDX(), wanderer1.getDY());
         wanderer1.projectileShooter(wanderer1.getFacing(),count);
-        berserker1.aggressiveRandomMotion(count, bouncer1);
+        berserker1.aggressiveRandomMotion(count, player);
+        //setEnemies(enemies);//projectiles don't work right
             
         if(count == 100){
             count = 0;
@@ -87,15 +123,22 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
         super.paintComponent(g);
         g.setColor(Color.blue);
         g.fillRect(player.x,player.y,player.width,player.height);
-        g.setColor(bouncer1.dotColor(count));
-        g.fillRect(bouncer1.x,bouncer1.y,bouncer1.width,bouncer1.height);
         g.setColor(Color.black);
+        g.fillRect(bouncer1.x,bouncer1.y,bouncer1.width,bouncer1.height);
         g.fillRect(follower1.x,follower1.y,follower1.width,follower1.height);
         g.fillRect(wanderer1.x,wanderer1.y,wanderer1.width,wanderer1.height);
         g.fillRect(berserker1.x,berserker1.y,berserker1.width,berserker1.height);
+
         for(int i = 0; i < wanderer1.getObjectArray().size();i++){
+            g.setColor(wanderer1.dotColor(count));
             g.fillRect(wanderer1.getObjectArray().get(i).x,wanderer1.getObjectArray().get(i).y,wanderer1.getObjectArray().get(i).width,wanderer1.getObjectArray().get(i).height);
         }
+        for(int i = 0; i < player.getObjectArray().size();i++){
+            System.out.println("bang");
+            g.setColor(player.dotColor(count));
+            g.fillRect(player.getObjectArray().get(i).x,player.getObjectArray().get(i).y,player.getObjectArray().get(i).width,player.getObjectArray().get(i).height);
+        }
+        g.setColor(Color.black);
         for(int i = 0;i < walls.getWallArray().size();i++){
             g.fillRect(walls.getWallArray().get(i).x, walls.getWallArray().get(i).y, walls.getWallArray().get(i).width, walls.getWallArray().get(i).height);
         }
@@ -105,7 +148,10 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         
+        
         counter();
+        
+        enemyContact(player);
  
     }
     @Override
@@ -131,8 +177,7 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
             player.setDY(0);
         }
         if(key == KeyEvent.VK_SPACE){
-            player.setDX(0);
-            player.setDY(0);
+            player.playerShooter(player.getFacing(), count);
         }
     }
 
