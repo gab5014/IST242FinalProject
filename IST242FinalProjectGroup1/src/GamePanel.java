@@ -12,13 +12,14 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
 
 
     private TangibleObject bouncer1, follower1, wanderer1, berserker1, player;
+    private TangibleObject item1,item2,item3;
     private Walls walls;
     private Timer time;
     private int count, pause;
     private Color dotColor;
     private JButton back;
     private JLabel name,difficulty;
-    private ArrayList<TangibleObject> enemies;
+    private ArrayList<TangibleObject> enemies,items;
     
     GamePanel(){
         
@@ -35,6 +36,14 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
         
         player = new Player(100,100,10,10);
         player.setDifficulty(10);
+        
+        items = new ArrayList();
+        item1 = new Item(10,10,10,10);
+        item2 = new Item(150,250,10,10);
+        item3 = new Item(10,250,10,10);
+        items.add(item1);
+        items.add(item2);
+        items.add(item3);
         time = new Timer(30,this);
         time.start();
         back = new JButton("Back");
@@ -79,6 +88,9 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
     public ArrayList<TangibleObject> getEnemies(){
         return this.enemies;
     }
+    public ArrayList<TangibleObject> getItems(){
+        return this.items;
+    }
     public void setEnemies(ArrayList<TangibleObject> enemies){
         for(int i = 0; i < wanderer1.getObjectArray().size();i++){
             enemies.add(wanderer1.getObjectArray().get(i));
@@ -86,10 +98,10 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
         }
         this.enemies = enemies;
     }
-    public void enemyContact(TangibleObject player){//make this adjust model
+    public void enemyContact(TangibleObject player){
         for(int i = 0; i < enemies.size(); i++){
             pause++;
-            if(pause > 30){
+            if(pause > 60){
                 if(player.intersects(enemies.get(i))){
                     player.setDifficulty(player.getDifficulty()-1);
                     pause = 0;
@@ -104,6 +116,7 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
         player.playerCollision();
         setDifficulty(player.getDifficulty());
         player.setFacing(player.getDX(), player.getDY());
+        player.itemCollision(items);
         bouncer1.bouncerMovement();
         bouncer1.wallCollision();
         follower1.targetFollower(player);
@@ -123,6 +136,10 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
         super.paintComponent(g);
         g.setColor(Color.blue);
         g.fillRect(player.x,player.y,player.width,player.height);
+        for(int i = 0; i < items.size();i++){
+            g.setColor(wanderer1.dotColor(count));
+            g.fillRect(items.get(i).x,items.get(i).y,items.get(i).width,items.get(i).height);
+        }
         g.setColor(Color.black);
         g.fillRect(bouncer1.x,bouncer1.y,bouncer1.width,bouncer1.height);
         g.fillRect(follower1.x,follower1.y,follower1.width,follower1.height);
@@ -130,7 +147,7 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
         g.fillRect(berserker1.x,berserker1.y,berserker1.width,berserker1.height);
 
         for(int i = 0; i < wanderer1.getObjectArray().size();i++){
-            g.setColor(wanderer1.dotColor(count));
+            //g.setColor(wanderer1.dotColor(count));
             g.fillRect(wanderer1.getObjectArray().get(i).x,wanderer1.getObjectArray().get(i).y,wanderer1.getObjectArray().get(i).width,wanderer1.getObjectArray().get(i).height);
         }
         for(int i = 0; i < player.getObjectArray().size();i++){
@@ -148,9 +165,9 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
     @Override
     public void actionPerformed(ActionEvent e) {
         
-        
-        counter();
-        
+        if(this.isFocusOwner()){
+            counter();
+        }           
         enemyContact(player);
  
     }
@@ -176,9 +193,9 @@ public class GamePanel extends JPanel implements KeyListener,ActionListener{
             player.setDX(1);
             player.setDY(0);
         }
-        if(key == KeyEvent.VK_SPACE){
-            player.playerShooter(player.getFacing(), count);
-        }
+//        if(key == KeyEvent.VK_SPACE){
+//            player.playerShooter(player.getFacing(), count);
+//        }
     }
 
     @Override
